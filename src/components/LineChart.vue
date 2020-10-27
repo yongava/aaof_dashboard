@@ -5,12 +5,13 @@
 
     export default {
         extends: Line,
+        props: ['id'],
         mounted () {
             this.renderChart({
                 labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                 datasets: [
                     {
-                        label: 'Data One',
+                        label: this.id,
                         backgroundColor: '#f87979',
                         data: [40, 39, 10, 40, 39, 80, 40]
                     }
@@ -22,8 +23,8 @@
 
 <style scoped lang="scss">
     canvas {
-        height: 100% !important;
         width: 100% !important;
+        max-height: 400px;
     }
     #doughnut-chart{
         height: 100% !important;

@@ -1,25 +1,10 @@
 <template>
     <div class="overview-wrapper">
-        <div class="grid-pattern">
-           <div>
-               <LineChart></LineChart>
+       <div>
+           <div class="grid-pattern">
+               <LineChart :id="item.id" v-for="(item, i) in charts" v-show="item.show" :key="i"></LineChart>
            </div>
-            <div>
-                <LineChart></LineChart>
-            </div>
-            <div>
-                <LineChart></LineChart>
-            </div>
-            <div>
-                <LineChart></LineChart>
-            </div>
-            <div>
-                <LineChart></LineChart>
-            </div>
-            <div>
-                <LineChart></LineChart>
-            </div>
-        </div>
+       </div>
     </div>
 </template>
 
@@ -28,6 +13,8 @@
     export default {
         name: "Commission",
         components: {LineChart},
+        props: ['charts', 'sorted', 'filtered'],
+
     }
 </script>
 
