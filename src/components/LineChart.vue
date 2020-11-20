@@ -5,15 +5,15 @@
 
     export default {
         extends: Line,
-        props: ['id'],
+        props: ['id', 'dates', 'closes'],
         mounted () {
             this.renderChart({
-                labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+                labels: this.dates, //['January', 'February', 'March', 'April', 'May', 'June', 'July'],
                 datasets: [
                     {
                         label: this.id,
                         backgroundColor: '#f87979',
-                        data: [40, 39, 10, 40, 39, 80, 40]
+                        data: this.closes, //[40, 39, 10, 40, 39, 80, 40]
                     }
                 ]
             }, {responsive: true, maintainAspectRatio: false})

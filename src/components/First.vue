@@ -2,9 +2,9 @@
     <div class="first-wrapper">
         <div class="upper">
             <div class="column">
-                <h2>SIS</h2>
-                <p>SiS Distibuton (Thailand) PCL</p>
-                <h4>BKK: SIS</h4>
+                <h2>{{symbol_name}}</h2>
+                <p>{{symbol_name}} Distibuton (Thailand) PCL</p>
+                <h4>BKK: {{symbol_name}}</h4>
             </div>
             <div class="column right">
                 <h2>10.80</h2>
@@ -26,6 +26,7 @@
 <script>
     export default {
         name: "Overview",
+        props: ['symbol_name'],
     }
 </script>
 
