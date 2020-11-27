@@ -12,12 +12,14 @@
 				datasets: [
 					{
 						label: this.id1,
-						backgroundColor: '#f87979',
+            fill: false,
+						borderColor: '#f87979',
 						data: this.closes1, //[40, 39, 10, 40, 39, 80, 40]
 					},
 					{
 						label: this.id2,
-						backgroundColor: '#1625a7',
+            fill: false,
+						borderColor: '#1625a7',
 						data: this.closes2, //[40, 39, 10, 40, 39, 80, 40]
 					},
 				]
