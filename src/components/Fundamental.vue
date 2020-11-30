@@ -46,7 +46,6 @@
 <script>
 	import LineChart from "./LineChart";
 	import TwoLineChart from "./TwoLineChart";
-	// import BarChart from "./BarChart";
 	import GroupBarChart from "./GroupBarChart";
 
 	export default {
@@ -58,7 +57,6 @@
 		},
 		components: {
 			GroupBarChart,
-			// BarChart,
 			LineChart,
 			TwoLineChart,
 		},
@@ -75,10 +73,12 @@
 			async loadChartData() {
 				for (let i = 0; i < this.charts.length; i++) {
 					const chart = this.charts[i];
+					this.contents[i] = null;
+
 					if (chart.show) {
 						if (chart.single) { // if chart is single line
 							try {
-								const {data} = await this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/AOT/${chart.feature}`);
+								const {data} = await this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/${this.symbol}/${chart.feature}`);
 
 								if (chart.style === 'line') {
 									this.contents[i] = {
@@ -122,7 +122,7 @@
 
 							try {
 								for (let j = 0; j < chart.features.length; j++) {
-									const {data} = await this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/AOT/${chart.features[j]}`);
+									const {data} = await this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/${this.symbol}/${chart.features[j]}`);
 									data.sort(function (a, b) {
 										return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
 									}) && data.map(item => {

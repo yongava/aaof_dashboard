@@ -13,7 +13,7 @@
                     {
                         label: this.id,
                         fill: false,
-                        borderColor: '#f87979',
+                        borderColor: '#833ebe',
                         data: this.closes, //[40, 39, 10, 40, 39, 80, 40]
                     }
                 ]
