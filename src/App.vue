@@ -41,6 +41,7 @@
           <div class="content">
             <Component
               :is="currentComponent"
+              :submit_cnt="submit_cnt"
               :symbol_name="symbol_name"
             ></Component>
           </div>
@@ -296,6 +297,7 @@
 			},
 			async getData(symbol_name) {
 				this.submit_cnt++;
+
 				const {data} = await this.axios.get(`https://alpha.southeastasia.cloudapp.azure.com/prices/${symbol_name}`);
 
 				//Plot Line chart x=date, y=close

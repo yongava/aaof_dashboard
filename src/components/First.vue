@@ -17,7 +17,7 @@
         <div class="bottom">
             <h2>Electronic Technology</h2>
             <p>
-                ขายส่งคอมพิวเตอร์ ซอฟท์แวร์ อุปกรณ์ต่อพ่วง สมาร์ทโฟน และอุปกรณ์สำนักงานอัตโนมัติต่างๆในประเทศไทยโดย เป็นตัวแทนจำหน่ายให้กับผู้ผลิตชั้นนำระดับโลก เช่น Acer, Brother, Dell, Hewlett Packard Enterprise, HP Inc., Lenovo, Samsung, Vmware, Wiko เป็นต้น
+                {{businessText}}
             </p>
         </div>
     </div>
@@ -26,7 +26,30 @@
 <script>
     export default {
         name: "Overview",
-        props: ['symbol_name'],
+        props: ['symbol_name', 'submit_cnt'],
+        data() {
+            return {
+                businessText: '',
+            }
+        },
+        methods: {
+            async loadBusinessData() {
+                this.businessText = '';
+                try {
+                    const businessInfo = await this.axios.get(`https://mka-api.alpha.lab.ai/businessinfo/${this.symbol_name}`);
+                    this.businessText = businessInfo.data && businessInfo.data[0] && businessInfo.data[0].BusinessTypeTH;
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+        },
+        watch: {
+            submit_cnt: function () {
+                if (this.symbol_name && this.symbol_name.trim() !== '') {
+                    this.loadBusinessData();
+                }
+            },
+        }
     }
 </script>
 
