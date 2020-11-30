@@ -4,6 +4,10 @@ import App from './App.vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 
+import VueApexCharts from 'vue-apexcharts'
+Vue.use(VueApexCharts)
+Vue.component('apexchart', VueApexCharts)
+
 // const BASE_URL = 'https://alpha.southeastasia.cloudapp.azure.com/';
 
 Vue.use(VModal)

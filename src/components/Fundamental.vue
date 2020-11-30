@@ -10,11 +10,22 @@
         >
           <LineChart
             :id="item.feature"
-            v-show="item.show && item.single"
-            :key="i + '-fundamental-' + item.count"
+            v-show="item.show && item.single && item.style === 'line'"
+            :key="i + '-fundamental-line-' + item.count"
             :dates='contents[i] && contents[i].dates'
             :closes="contents[i] && contents[i].closes"
           ></LineChart>
+
+          <GroupBarChart
+            :id="item.feature"
+            v-show="item.show && item.single && item.style === 'bar'"
+            :key="i + '-fundamental-bar-' + item.count"
+            :dates='contents[i] && contents[i].dates'
+            :closes1="contents[i] && contents[i].closes1"
+            :closes2="contents[i] && contents[i].closes2"
+            :closes3="contents[i] && contents[i].closes3"
+            :closes4="contents[i] && contents[i].closes4"
+          ></GroupBarChart>
 
           <TwoLineChart
             id1="Roa"
@@ -35,6 +46,8 @@
 <script>
 	import LineChart from "./LineChart";
 	import TwoLineChart from "./TwoLineChart";
+	// import BarChart from "./BarChart";
+	import GroupBarChart from "./GroupBarChart";
 
 	export default {
 		name: "Commission",
@@ -44,6 +57,8 @@
 			}
 		},
 		components: {
+			GroupBarChart,
+			// BarChart,
 			LineChart,
 			TwoLineChart,
 		},
@@ -64,16 +79,37 @@
 						if (chart.single) { // if chart is single line
 							try {
 								const {data} = await this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/AOT/${chart.feature}`);
-								this.contents[i] = {
-									dates: [],
-									closes: []
-								};
-								data.sort(function (a, b) {
-									return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
-								}) && data.map(item => {
-									this.contents[i].dates.push(item.Fiscal + '-' + item.Quarter);
-									this.contents[i].closes.push(item[chart.feature]);
-								});
+
+								if (chart.style === 'line') {
+									this.contents[i] = {
+										dates: [],
+										closes: []
+									};
+
+									data.sort(function (a, b) {
+										return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
+									}) && data.map(item => {
+										this.contents[i].dates.push(item.Fiscal + '-' + item.Quarter);
+										this.contents[i].closes.push(item[chart.feature]);
+									});
+                } else if (chart.style === 'bar') {
+									this.contents[i] = {
+										dates: [],
+										closes1: [],
+										closes2: [],
+										closes3: [],
+										closes4: [],
+									};
+
+									data.sort(function (a, b) {
+										return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
+									}) && data.map(item => {
+										this.contents[i].dates.push(item.Fiscal);
+										this.contents[i][`closes${item.Quarter}`].push(item[chart.feature]);
+									});
+
+									this.contents[i].dates = [...new Set(this.contents[i].dates)];
+                }
 							} catch (e) {
 								console.log(e);
 							}
@@ -107,8 +143,7 @@
 			},
 		},
 		watch: {
-			submit_cnt: function (val) {
-				console.log(val);
+			submit_cnt: function () {
 				if (this.symbol && this.symbol.trim() !== '') {
 					this.loadChartData();
 				}

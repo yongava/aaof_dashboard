@@ -14,11 +14,13 @@
       <div class="upper-row">
         <SidebarOne></SidebarOne>
         <div class="wrap">
-          <LineChart
+          <apexchart :key="chartComponentKey" width="100%" height="400px" type="candlestick" :options="options" :series="series"></apexchart>
+          <!--<LineChart
+            id="Price"
             :key="chartComponentKey"
             :dates="lineChart_dates"
             :closes="lineChart_closes"
-          ></LineChart>
+          ></LineChart>-->
         </div>
         <div class="wrap">
           <ul>
@@ -85,7 +87,7 @@
               <li v-for="item in charts" :id="item.id" :key="item.id">
                 <label for="item"></label>
                 <input type="checkbox" :name="item.id" v-model="item.show"/>
-                Chart with id: {{ item.id }}
+                Chart with id: {{ item.feature }}
               </li>
             </ul>
             <button @click="selectAll">Select all</button>
@@ -120,8 +122,30 @@
 			Income,
 			Cashflow,
 		},
+		mounted() {
+			this.getData('AOT');
+		},
 		data() {
 			return {
+				options: {
+					candlestick: {
+						colors: {
+							upward: '#3C90EB',
+							downward: '#DF7D46'
+						}
+					},
+					chart: {
+						toolbar: {
+							show: false,
+						},
+						zoom: {
+							enabled: false,
+						}
+					},
+				},
+				series: [{
+					data: []
+				}],
 				sorted: false,
 				currentComponent: "First",
 				currentComponentNav: "Fundamental",
@@ -171,7 +195,8 @@
 						show: true,
 						feature: 'Assets',
 						single: true, // when chart is single line
-            count: 0, // to render separate
+						count: 0, // to render separate,
+            style: 'bar',
 					},
 					{
 						id: 2,
@@ -179,6 +204,7 @@
 						feature: 'Liabilities',
 						single: true,
 						count: 0,
+            style: 'bar'
 					},
 					{
 						id: 3,
@@ -186,6 +212,7 @@
 						feature: 'Equity',
 						single: true,
 						count: 0,
+            style: 'bar',
 					},
 					{
 						id: 4,
@@ -193,6 +220,7 @@
 						feature: 'NetProfit',
 						single: true,
 						count: 0,
+            style: 'bar',
 					},
 					{
 						id: 5,
@@ -200,6 +228,7 @@
 						feature: 'De',
 						single: true,
 						count: 0,
+						style: 'bar',
 					},
 					{
 						id: 6,
@@ -207,6 +236,7 @@
 						feature: 'CurrentRatio',
 						single: true,
 						count: 0,
+						style: 'line',
 					},
 					{
 						id: 7,
@@ -214,6 +244,7 @@
 						feature: 'InterestCoverage',
 						single: true,
 						count: 0,
+						style: 'line',
 					},
 					{
 						id: 8,
@@ -221,6 +252,7 @@
 						feature: 'Inventories',
 						single: true,
 						count: 0,
+						style: 'bar',
 					},
 					{
 						id: 9,
@@ -228,6 +260,7 @@
 						feature: 'AccountsPayable',
 						single: true,
 						count: 0,
+						style: 'bar',
 					},
 					{
 						id: 10,
@@ -239,11 +272,12 @@
 						],
 						single: false,
 						count: 0,
+						style: 'line',
 					}
 				],
 				symbol_name: 'AOT',
-				lineChart_dates: [],
-				lineChart_closes: [],
+				/*lineChart_dates: [],
+				lineChart_closes: [],*/
 				chartComponentKey: 0,
 				submit_cnt: 0,
 			};
@@ -266,21 +300,43 @@
 
 				//Plot Line chart x=date, y=close
 
-				this.lineChart_dates = []
-				this.lineChart_closes = []
+				/*this.lineChart_dates = []
+				this.lineChart_closes = []*/
+        this.series[0].data = [];
 				let index;
 				let t = data.data.length / 50;
 				let step = ~~t;
 				for (index = 0; index < data.data.length; index += step) {//
 
 					const el = data.data[index];
-					this.lineChart_dates.push(el.date);
-					this.lineChart_closes.push(el.close);
+					/*this.lineChart_dates.push(el.date);
+					this.lineChart_closes.push(el.close);*/
+
+					this.series[0].data.push({
+						x: el.date,
+						y: [
+							el.open,
+							el.high,
+							el.low,
+							el.close,
+						]
+					});
+
 				}
 				if (Math.abs(t - step) > 0.0001) {
 
-					this.lineChart_dates.push(data.data[data.data.length - 1].date);
-					this.lineChart_closes.push(data.data[data.data.length - 1].close);
+					/*this.lineChart_dates.push(data.data[data.data.length - 1].date);
+					this.lineChart_closes.push(data.data[data.data.length - 1].close);*/
+
+					this.series[0].data.push({
+						x: data.data[data.data.length - 1].date,
+						y: [
+							data.data[data.data.length - 1].open,
+							data.data[data.data.length - 1].high,
+							data.data[data.data.length - 1].low,
+							data.data[data.data.length - 1].close,
+						]
+					});
 				}
 				this.chartComponentKey++;
 			},
@@ -315,7 +371,7 @@
     width: 100%;
     height: fit-content;
     margin: 0;
-    overflow: hidden;
+    overflow-x: scroll !important;
     font-family: "kit";
     font-weight: bold;
     background: #f1eff8;
@@ -323,6 +379,7 @@
   }
 
   .main-wrapper {
+    min-width: 1500px;
     padding: 28px;
     padding-left: 38px;
     height: fit-content;
@@ -336,7 +393,7 @@
       position: relative;
 
       .wrap {
-        display: flex;
+        /*display: flex;*/
         box-shadow: 0px 3px 6px #00000029;
         background: #fff;
         width: 100%;
@@ -437,7 +494,7 @@
   }
 
   ::-webkit-scrollbar {
-    display: none;
+    /*display: none;*/
   }
 
   .navigation-button {
