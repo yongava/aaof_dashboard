@@ -7,10 +7,10 @@
                 <h4>BKK: {{symbol_name}}</h4>
             </div>
             <div class="column right">
-                <h2>10.80</h2>
+                <h2>{{latest && latest.close}}</h2>
                 <div>
-                    <span>+12.34</span>
-                    <span>68.75%</span>
+                    <span>{{diff > 0 ? '+' + diff : diff}}</span>
+                    <span>{{((diff) / 2 * 100).toFixed(2)}}%</span>
                 </div>
             </div>
         </div>
@@ -26,7 +26,7 @@
 <script>
     export default {
         name: "Overview",
-        props: ['symbol_name', 'submit_cnt'],
+        props: ['symbol_name', 'submit_cnt', 'latest', 'previous'],
         data() {
             return {
                 businessText: '',
@@ -40,6 +40,15 @@
                     this.businessText = businessInfo.data && businessInfo.data[0] && businessInfo.data[0].BusinessTypeTH;
                 } catch (e) {
                     console.log(e);
+                }
+            },
+        },
+        computed: {
+            diff: function () {
+                if (this.latest && this.previous) {
+                    return this.latest.close - this.previous.close;
+                } else {
+                    return 0;
                 }
             }
         },

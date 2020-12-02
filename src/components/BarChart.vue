@@ -1,12 +1,11 @@
-
 <script>
 
-	import { Bar } from '../plugins/BaseCharts'
+	import {Bar} from '../plugins/BaseCharts'
 
 	export default {
 		extends: Bar,
 		props: ['id', 'dates', 'closes'],
-		mounted () {
+		mounted() {
 			this.renderChart({
 				labels: this.dates, //['January', 'February', 'March', 'April', 'May', 'June', 'July'],
 				datasets: [
@@ -17,7 +16,10 @@
 						data: this.closes, //[40, 39, 10, 40, 39, 80, 40]
 					},
 				]
-			}, {responsive: true, maintainAspectRatio: false})
+			}, {
+				responsive: true, maintainAspectRatio: false, legend: {position: 'bottom'},
+				title: {text: this.id, position: 'top', display: true, fontSize: 16}
+			})
 		}
 	}
 </script>
@@ -27,7 +29,8 @@
     width: 100% !important;
     max-height: 400px;
   }
-  #doughnut-chart{
+
+  #doughnut-chart {
     height: 100% !important;
     width: 100% !important;
     margin: 24px;

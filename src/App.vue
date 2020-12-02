@@ -43,6 +43,8 @@
               :is="currentComponent"
               :submit_cnt="submit_cnt"
               :symbol_name="symbol_name"
+              :latest="latest"
+              :previous="previous"
             ></Component>
           </div>
         </div>
@@ -128,6 +130,8 @@
 		},
 		data() {
 			return {
+				latest: null,
+        previous: null,
 				options: {
 					candlestick: {
 						colors: {
@@ -299,6 +303,10 @@
 				this.submit_cnt++;
 
 				const {data} = await this.axios.get(`https://alpha.southeastasia.cloudapp.azure.com/prices/${symbol_name}`);
+
+				const len = data.data.length;
+				this.latest = data.data[len - 1];
+				this.previous = data.data[len - 2];
 
 				//Plot Line chart x=date, y=close
 
