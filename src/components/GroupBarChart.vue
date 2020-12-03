@@ -10,25 +10,25 @@
 				labels: this.dates,
 				datasets: [
 					{
-						label: 'Quarter 1',
+						label: 'Q1',
 						fill: true,
 						backgroundColor: '#7e60e3',
 						data: this.closes1,
 					},
 					{
-						label: 'Quarter 2',
+						label: 'Q2',
 						fill: true,
 						backgroundColor: '#833ebe',
 						data: this.closes2,
 					},
 					{
-						label: 'Quarter 3',
+						label: 'Q3',
 						fill: true,
 						backgroundColor: '#7072a8',
 						data: this.closes3,
 					},
 					{
-						label: 'Quarter 4',
+						label: 'Q4',
 						fill: true,
 						backgroundColor: '#e079f8',
 						data: this.closes4,

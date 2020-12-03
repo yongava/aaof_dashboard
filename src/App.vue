@@ -14,13 +14,14 @@
       <div class="upper-row">
         <SidebarOne></SidebarOne>
         <div class="wrap">
-          <apexchart :key="chartComponentKey" width="100%" height="400px" type="candlestick" :options="options" :series="series"></apexchart>
-          <!--<LineChart
+          <!--<apexchart :key="chartComponentKey" width="100%" height="400px" type="candlestick" :options="options" :series="series"></apexchart>-->
+          <LineChart
             id="Price"
             :key="chartComponentKey"
             :dates="lineChart_dates"
             :closes="lineChart_closes"
-          ></LineChart>-->
+            :rotation="0"
+          ></LineChart>
         </div>
         <div class="wrap">
           <ul>
@@ -281,8 +282,8 @@
 					}
 				],
 				symbol_name: 'AOT',
-				/*lineChart_dates: [],
-				lineChart_closes: [],*/
+				lineChart_dates: [],
+				lineChart_closes: [],
 				chartComponentKey: 0,
 				submit_cnt: 0,
 			};
@@ -310,8 +311,8 @@
 
 				//Plot Line chart x=date, y=close
 
-				/*this.lineChart_dates = []
-				this.lineChart_closes = []*/
+				this.lineChart_dates = []
+				this.lineChart_closes = []
         this.series[0].data = [];
 				let index;
 				let t = data.data.length / 50;
@@ -319,8 +320,8 @@
 				for (index = 0; index < data.data.length; index += step) {//
 
 					const el = data.data[index];
-					/*this.lineChart_dates.push(el.date);
-					this.lineChart_closes.push(el.close);*/
+					this.lineChart_dates.push(el.date);
+					this.lineChart_closes.push(el.close);
 
 					this.series[0].data.push({
 						x: el.date,
@@ -335,8 +336,8 @@
 				}
 				if (Math.abs(t - step) > 0.0001) {
 
-					/*this.lineChart_dates.push(data.data[data.data.length - 1].date);
-					this.lineChart_closes.push(data.data[data.data.length - 1].close);*/
+					this.lineChart_dates.push(data.data[data.data.length - 1].date);
+					this.lineChart_closes.push(data.data[data.data.length - 1].close);
 
 					this.series[0].data.push({
 						x: data.data[data.data.length - 1].date,

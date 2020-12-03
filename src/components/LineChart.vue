@@ -4,7 +4,7 @@
 
 	export default {
 		extends: Line,
-		props: ['id', 'dates', 'closes'],
+		props: ['id', 'dates', 'closes', 'rotation'],
 		mounted() {
 			this.renderChart({
 				labels: this.dates, //['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -18,7 +18,15 @@
 				]
 			}, {
 				responsive: true, maintainAspectRatio: false,
-				legend: {position: 'bottom'}, title: {text: this.id, position: 'top', display: true, fontSize: 16}
+				legend: {position: 'bottom'}, title: {text: this.id, position: 'top', display: true, fontSize: 16},
+				scales: {
+					xAxes: [{
+						ticks: {
+							maxRotation: this.rotation !== undefined ? this.rotation: 45,
+							minRotation: this.rotation !== undefined ? this.rotation: 0,
+						}
+					}]
+				}
 			})
 		}
 	}
