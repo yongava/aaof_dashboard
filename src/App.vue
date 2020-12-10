@@ -12,7 +12,7 @@
         <button @click="get_data_graph" class="submit">submit</button>
       </div>
       <div class="upper-row">
-        <SidebarOne></SidebarOne>
+        <!--<SidebarOne></SidebarOne>-->
         <div class="wrap">
           <!--<apexchart :key="chartComponentKey" width="100%" height="400px" type="candlestick" :options="options" :series="series"></apexchart>-->
           <LineChart
@@ -44,14 +44,12 @@
               :is="currentComponent"
               :submit_cnt="submit_cnt"
               :symbol_name="symbol_name"
-              :latest="latest"
-              :previous="previous"
             ></Component>
           </div>
         </div>
       </div>
       <div class="content-wrapper">
-        <SidebarOne></SidebarOne>
+        <!--<SidebarOne></SidebarOne>-->
         <div>
           <div class="navigation-button">
             <ul class="bottom">
@@ -80,7 +78,7 @@
           <div class="content">
             <Component
               :is="currentComponentNav"
-              :charts="charts"
+              :charts="charts[currentComponentNav]"
               :submit_cnt="submit_cnt"
               :symbol="symbol_name"
             ></Component>
@@ -88,8 +86,8 @@
           <modal name="config" height="65%">
             <h2 class="modal-h2">Select Charts</h2>
             <ul class="modal-ul">
-              <li v-for="item in charts" :id="item.id" :key="item.id">
-                <label for="item"></label>
+              <li v-for="item in charts[currentComponentNav]" :id="item.id" :key="item.id">
+                <label></label>
                 <input type="checkbox" :name="item.id" v-model="item.show"/>
                 Chart with id: {{ item.feature }}
               </li>
@@ -108,6 +106,7 @@
 	import Second from "./components/Second";
 	import Third from "./components/Third";
 	import Fundamental from "./components/Fundamental";
+	import Balance from "./components/Balance";
 	import Income from "./components/Income";
 	import Cashflow from "./components/Cashflow";
 
@@ -123,6 +122,7 @@
 			Second,
 			Third,
 			Fundamental,
+      Balance,
 			Income,
 			Cashflow,
 		},
@@ -132,7 +132,7 @@
 		data() {
 			return {
 				latest: null,
-        previous: null,
+				previous: null,
 				options: {
 					candlestick: {
 						colors: {
@@ -158,13 +158,13 @@
 				configArr: [],
 				navigation: [
 					{
-						name: "First",
+						name: "Information",
 						component: "First",
 						img: require("@/assets/info.svg"),
 						imgw: require("@/assets/whitei.svg"),
 						//img: '../assets/info.svg'
 					},
-					{
+					/*{
 						name: "Second",
 						component: "Second",
 						img: require("@/assets/stat.svg"),
@@ -175,12 +175,18 @@
 						component: "Third",
 						img: require("@/assets/whiteanalytics.svg"),
 						imgw: require("@/assets/whiteanalytics.svg"),
-					},
+					},*/
 				],
 				secondNav: [
 					{
 						name: "Fundamental",
 						component: "Fundamental",
+						img: require("@/assets/whiteinfo.svg"),
+						//img: '../assets/info.svg'
+					},
+					{
+						name: "Balance",
+						component: "Balance",
 						img: require("@/assets/whiteinfo.svg"),
 						//img: '../assets/info.svg'
 					},
@@ -195,92 +201,620 @@
 						img: require("@/assets/whiteinfo.svg"),
 					},
 				],
-				charts: [
-					{
-						id: 1,
-						show: true,
-						feature: 'Assets',
-						single: true, // when chart is single line
-						count: 0, // to render separate,
-            style: 'bar',
-					},
-					{
-						id: 2,
-						show: true,
-						feature: 'Liabilities',
-						single: true,
-						count: 0,
-            style: 'bar'
-					},
-					{
-						id: 3,
-						show: true,
-						feature: 'Equity',
-						single: true,
-						count: 0,
-            style: 'bar',
-					},
-					{
-						id: 4,
-						show: true,
-						feature: 'NetProfit',
-						single: true,
-						count: 0,
-            style: 'bar',
-					},
-					{
-						id: 5,
-						show: true,
-						feature: 'De',
-						single: true,
-						count: 0,
-						style: 'bar',
-					},
-					{
-						id: 6,
-						show: true,
-						feature: 'CurrentRatio',
-						single: true,
-						count: 0,
-						style: 'line',
-					},
-					{
-						id: 7,
-						show: true,
-						feature: 'InterestCoverage',
-						single: true,
-						count: 0,
-						style: 'line',
-					},
-					{
-						id: 8,
-						show: true,
-						feature: 'Inventories',
-						single: true,
-						count: 0,
-						style: 'bar',
-					},
-					{
-						id: 9,
-						show: true,
-						feature: 'AccountsPayable',
-						single: true,
-						count: 0,
-						style: 'bar',
-					},
-					{
-						id: 10,
-						show: true,
-						feature: 'Roa-Roe',
-						features: [
-							'Roa',
-							'Roe'
-						],
-						single: false,
-						count: 0,
-						style: 'line',
-					}
-				],
+				charts: {
+					Fundamental: [
+						{
+							id: 1,
+							show: true,
+							feature: 'Eps',
+							single: true, // when chart is single line
+							count: 0, // to render separate,
+							style: 'bar',
+						},
+						{
+							id: 2,
+							show: true,
+							feature: 'Roa',
+							single: true,
+							count: 0,
+							style: 'bar'
+						},
+						{
+							id: 3,
+							show: true,
+							feature: 'Roe',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 4,
+							show: true,
+							feature: 'NetProfitMargin',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 5,
+							show: true,
+							feature: 'PE',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 6,
+							show: true,
+							feature: 'BVPS',
+							single: true,
+							count: 0,
+							style: 'line',
+						},
+						{
+							id: 7,
+							show: true,
+							feature: 'PBV',
+							single: true,
+							count: 0,
+							style: 'line',
+						},
+						{
+							id: 8,
+							show: true,
+							feature: 'Yield',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 9,
+							show: true,
+							feature: 'De',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 10,
+							show: true,
+							feature: 'DPS',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 11,
+							show: true,
+							feature: 'AvgCollectionPeriod',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 12,
+							show: true,
+							feature: 'AvgInventoriesPeriod',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 13,
+							show: true,
+							feature: 'AvgPaymentPeriod',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 14,
+							show: true,
+							feature: 'GrossPFMargin',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 15,
+							show: true,
+							feature: 'EBITMargin',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 16,
+							show: true,
+							feature: 'SGAGrossPF',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 17,
+							show: true,
+							feature: 'DAGrossPF',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 18,
+							show: true,
+							feature: 'InterestRevenue',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 19,
+							show: true,
+							feature: 'CurrentRatio',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 20,
+							show: true,
+							feature: 'CapexNetProfit',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 21,
+							show: true,
+							feature: 'EVPerEBITDA',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 22,
+							show: true,
+							feature: 'ListShare',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 23,
+							show: true,
+							feature: 'OCFCapex',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 24,
+							show: true,
+							feature: 'MarketCapPerOCF',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 25,
+							show: true,
+							feature: 'RevenueGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 26,
+							show: true,
+							feature: 'COGSGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 27,
+							show: true,
+							feature: 'GrossPFGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 28,
+							show: true,
+							feature: 'SGAGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 29,
+							show: true,
+							feature: 'OperatingPFGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 30,
+							show: true,
+							feature: 'EBITGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 31,
+							show: true,
+							feature: 'DAGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 32,
+							show: true,
+							feature: 'EBITDAGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 33,
+							show: true,
+							feature: 'InterestGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 34,
+							show: true,
+							feature: 'TaxGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 35,
+							show: true,
+							feature: 'NetProfitGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 36,
+							show: true,
+							feature: 'EpsGrowth',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 37,
+							show: true,
+							feature: 'CashCycle',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 38,
+							show: true,
+							feature: 'PayOutRatio',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						/*{
+							id: 10,
+							show: true,
+							feature: 'Roa-Roe',
+							features: [
+								'Roa',
+								'Roe'
+							],
+							single: false,
+							count: 0,
+							style: 'line',
+						}*/
+					],
+          Balance: [
+						{
+							id: 1,
+							show: true,
+							feature: 'Assets',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 2,
+							show: true,
+							feature: 'Liabilities',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 3,
+							show: true,
+							feature: 'Equity',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 4,
+							show: true,
+							feature: 'MarketCap',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 5,
+							show: true,
+							feature: 'CurrentLiabilities',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 6,
+							show: true,
+							feature: 'CurrentAsset',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 7,
+							show: true,
+							feature: 'CurrentLiabilities',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 8,
+							show: true,
+							feature: 'Cash',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 9,
+							show: true,
+							feature: 'Inventories',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 10,
+							show: true,
+							feature: 'AccountsPayable',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 11,
+							show: true,
+							feature: 'NonCurrentLiabilities',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 12,
+							show: true,
+							feature: 'TotalEquities',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 13,
+							show: true,
+							feature: 'AuthorizedCapital',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 14,
+							show: true,
+							feature: 'RetainedEarning',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 15,
+							show: true,
+							feature: 'PPE',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 16,
+							show: true,
+							feature: 'EV',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 17,
+							show: true,
+							feature: 'SGA',
+							single: true,
+							count: 0,
+							style: 'bar',
+						}
+          ],
+          Income: [
+						{
+							id: 1,
+							show: true,
+							feature: 'Revenue',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 2,
+							show: true,
+							feature: 'NetProfit',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 3,
+							show: true,
+							feature: 'ShortTermInvestment',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 4,
+							show: true,
+							feature: 'Expense',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 5,
+							show: true,
+							feature: 'SG',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 6,
+							show: true,
+							feature: 'Capex',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 7,
+							show: true,
+							feature: 'GrossPF',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 8,
+							show: true,
+							feature: 'EBIT',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 9,
+							show: true,
+							feature: 'COGS',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 10,
+							show: true,
+							feature: 'OtherIncome',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 11,
+							show: true,
+							feature: 'EBITDA',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 12,
+							show: true,
+							feature: 'EBT',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 13,
+							show: true,
+							feature: 'InterestCoverage',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 14,
+							show: true,
+							feature: 'RevenuesFromSale',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 15,
+							show: true,
+							feature: 'Sale',
+							single: true,
+							count: 0,
+							style: 'bar',
+						}
+          ],
+          Cashflow: [
+						{
+							id: 1,
+							show: true,
+							feature: 'Operating',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 2,
+							show: true,
+							feature: 'Financing',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 3,
+							show: true,
+							feature: 'Investing',
+							single: true,
+							count: 0,
+							style: 'bar',
+						},
+						{
+							id: 4,
+							show: true,
+							feature: 'NetCashFlow',
+							single: true,
+							count: 0,
+							style: 'bar',
+						}
+          ]
+				},
 				symbol_name: 'AOT',
 				lineChart_dates: [],
 				lineChart_closes: [],
@@ -290,7 +824,7 @@
 		},
 		methods: {
 			setChartVisibility(flag) {
-				this.charts.forEach((item) => {
+				this.charts[this.currentComponentNav].forEach((item) => {
 					item.show = flag;
 				});
 			},
@@ -305,15 +839,11 @@
 
 				const {data} = await this.axios.get(`https://alpha.southeastasia.cloudapp.azure.com/prices/${symbol_name}`);
 
-				const len = data.data.length;
-				this.latest = data.data[len - 1];
-				this.previous = data.data[len - 2];
-
 				//Plot Line chart x=date, y=close
 
 				this.lineChart_dates = []
 				this.lineChart_closes = []
-        this.series[0].data = [];
+				this.series[0].data = [];
 				let index;
 				let t = data.data.length / 50;
 				let step = ~~t;
@@ -533,6 +1063,8 @@
     padding: 0;
     flex-direction: column;
     list-style: none;
+    height: 530px;
+    overflow: scroll;
 
     li {
       display: flex;

@@ -7,10 +7,10 @@
                 <h4>BKK: {{symbol_name}}</h4>
             </div>
             <div class="column right">
-                <h2>{{latest && latest.close}}</h2>
+                <h2>{{close}}</h2>
                 <div>
-                    <span>{{diff > 0 ? '+' + diff : diff}}</span>
-                    <span>{{((diff) / 2 * 100).toFixed(2)}}%</span>
+                    <span>{{change >= 0 ? '+' + change : change}}</span>
+                    <span>{{pct_change}}%</span>
                 </div>
             </div>
         </div>
@@ -26,10 +26,13 @@
 <script>
     export default {
         name: "Overview",
-        props: ['symbol_name', 'submit_cnt', 'latest', 'previous'],
+        props: ['symbol_name', 'submit_cnt'],
         data() {
             return {
                 businessText: '',
+                close: null,
+                change: null,
+                pct_change: null,
             }
         },
         methods: {
@@ -38,19 +41,17 @@
                 try {
                     const businessInfo = await this.axios.get(`https://mka-api.alpha.lab.ai/businessinfo/${this.symbol_name}`);
                     this.businessText = businessInfo.data && businessInfo.data[0] && businessInfo.data[0].BusinessTypeTH;
+
+                    const pricesChange = await this.axios.get(`https://mka-api.alpha.lab.ai/prices/pct_change/${this.symbol_name}`);
+                    if (pricesChange && pricesChange.data) {
+                        this.close = pricesChange.data.close;
+                        this.pct_change = pricesChange.data.pct_change;
+                        this.change = pricesChange.data.change;
+                    }
                 } catch (e) {
                     console.log(e);
                 }
             },
-        },
-        computed: {
-            diff: function () {
-                if (this.latest && this.previous) {
-                    return this.latest.close - this.previous.close;
-                } else {
-                    return 0;
-                }
-            }
         },
         watch: {
             submit_cnt: function () {
