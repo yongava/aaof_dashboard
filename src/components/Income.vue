@@ -105,10 +105,17 @@
                                         return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
                                     }) && data.map(item => {
                                         this.contents[i].dates.push(item.Fiscal);
+                                        this.contents[i].dates = [...new Set(this.contents[i].dates)];
+
+                                        // if previous year's quarter data doesn't exist
+                                        if (this.contents[i][`closes${item.Quarter}`].length < (this.contents[i].dates.length - 1)) {
+                                            //
+                                            while (this.contents[i][`closes${item.Quarter}`].length < (this.contents[i].dates.length - 1)) {
+                                                this.contents[i][`closes${item.Quarter}`].push(0);
+                                            }
+                                        }
                                         this.contents[i][`closes${item.Quarter}`].push(item[chart.feature]);
                                     });
-
-                                    this.contents[i].dates = [...new Set(this.contents[i].dates)];
                                 }
                             } catch (e) {
                                 console.log(e);
