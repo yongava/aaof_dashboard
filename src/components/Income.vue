@@ -136,10 +136,10 @@
                                 console.log(e);
                             }
                         }
-                        // re-render chart
-                        chart.count++;
                     }
                 }
+                // re-render chart
+                this.charts && this.charts.map(entity => entity.count++);
             },
         },
         watch: {
