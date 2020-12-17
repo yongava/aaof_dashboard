@@ -44,119 +44,135 @@
 </template>
 
 <script>
-	import LineChart from "./LineChart";
-	import TwoLineChart from "./TwoLineChart";
-	import GroupBarChart from "./GroupBarChart";
+  import LineChart from "./LineChart";
+  import TwoLineChart from "./TwoLineChart";
+  import GroupBarChart from "./GroupBarChart";
 
-	export default {
-		name: "Commission",
+  export default {
+    name: "Commission",
     mounted() {
-			if (this.symbol && this.symbol.trim() !== '' && this.submit_cnt !== 0) {
-				this.loadChartData();
-			}
-		},
-		components: {
-			GroupBarChart,
-			LineChart,
-			TwoLineChart,
-		},
-		props: ['charts', 'sorted', 'filtered', 'symbol', 'submit_cnt'],
-		data: () => ({
-			contents: [
-				{
-					dates: [],
-					closes: [],
-				},
-			]
-		}),
-		methods: {
-			async loadChartData() {
-				for (let i = 0; i < this.charts.length; i++) {
-					const chart = this.charts[i];
-					this.contents[i] = null;
+      if (this.symbol && this.symbol.trim() !== '' && this.submit_cnt !== 0) {
+        this.loadChartData();
+      }
+    },
+    components: {
+      GroupBarChart,
+      LineChart,
+      TwoLineChart,
+    },
+    props: ['charts', 'sorted', 'filtered', 'symbol', 'submit_cnt'],
+    data: () => ({
+      contents: [
+        {
+          dates: [],
+          closes: [],
+        },
+      ]
+    }),
+    methods: {
+      async loadChartData() {
+        let apiResponseCnt = 0, apiCallCnt = 0;
+        this.charts && this.charts.map((chart, i) => {
+          this.contents[i] = null;
+          if (chart.show) {
+            if (chart.single) { // if chart is single line
+              apiCallCnt++;
+              this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/${this.symbol}/${chart.feature}`)
+                .then(response => {
+                    const data = response.data;
 
-					if (chart.show) {
-						if (chart.single) { // if chart is single line
-							try {
-								const {data} = await this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/${this.symbol}/${chart.feature}`);
+                    if (chart.style === 'line') {
+                      this.contents[i] = {
+                        dates: [],
+                        closes: []
+                      };
 
-								if (chart.style === 'line') {
-									this.contents[i] = {
-										dates: [],
-										closes: []
-									};
+                      data.sort(function (a, b) {
+                        return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
+                      }) && data.map(item => {
+                        this.contents[i].dates.push(item.Fiscal + '-' + item.Quarter);
+                        this.contents[i].closes.push(item[chart.feature]);
+                      });
+                    } else if (chart.style === 'bar') {
+                      this.contents[i] = {
+                        dates: [],
+                        closes1: [],
+                        closes2: [],
+                        closes3: [],
+                        closes4: [],
+                      };
 
-									data.sort(function (a, b) {
-										return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
-									}) && data.map(item => {
-										this.contents[i].dates.push(item.Fiscal + '-' + item.Quarter);
-										this.contents[i].closes.push(item[chart.feature]);
-									});
-                } else if (chart.style === 'bar') {
-									this.contents[i] = {
-										dates: [],
-										closes1: [],
-										closes2: [],
-										closes3: [],
-										closes4: [],
-									};
+                      data.sort(function (a, b) {
+                        return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
+                      }) && data.map(item => {
+                        this.contents[i].dates.push(item.Fiscal);
+                        this.contents[i].dates = [...new Set(this.contents[i].dates)];
 
-									data.sort(function (a, b) {
-										return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
-									}) && data.map(item => {
-										this.contents[i].dates.push(item.Fiscal);
-                    this.contents[i].dates = [...new Set(this.contents[i].dates)];
-
-                    // if previous year's quarter data doesn't exist
-                    if (this.contents[i][`closes${item.Quarter}`].length < (this.contents[i].dates.length - 1)) {
-                      //
-                      while (this.contents[i][`closes${item.Quarter}`].length < (this.contents[i].dates.length - 1)) {
-                        this.contents[i][`closes${item.Quarter}`].push(0);
-                      }
+                        // if previous year's quarter data doesn't exist
+                        if (this.contents[i][`closes${item.Quarter}`].length < (this.contents[i].dates.length - 1)) {
+                          //
+                          while (this.contents[i][`closes${item.Quarter}`].length < (this.contents[i].dates.length - 1)) {
+                            this.contents[i][`closes${item.Quarter}`].push(0);
+                          }
+                        }
+                        this.contents[i][`closes${item.Quarter}`].push(item[chart.feature]);
+                      });
                     }
-                    this.contents[i][`closes${item.Quarter}`].push(item[chart.feature]);
-									});
-                }
-							} catch (e) {
-								console.log(e);
-							}
-						} else { // when several lines chart
-							this.contents[i] = {
-								dates: [],
-								closes1: [],
-								closes2: [],
-							};
+                  }
+                ).catch(error => {
+                console.log(error);
+              }).finally(() => {
+                apiResponseCnt++;
+              });
+            } else { // when several lines chart
+              this.contents[i] = {
+                dates: [],
+                closes1: [],
+                closes2: [],
+              };
 
-							try {
-								for (let j = 0; j < chart.features.length; j++) {
-									const {data} = await this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/${this.symbol}/${chart.features[j]}`);
-									data.sort(function (a, b) {
-										return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
-									}) && data.map(item => {
-										if (j === 0) {
-											this.contents[i].dates.push(item.Fiscal + '-' + item.Quarter);
-										}
-										this.contents[i]['closes' + (j + 1)].push(item[chart.features[j]]);
-									});
-								}
-							} catch (e) {
-								console.log(e);
-							}
-						}
-					}
-				}
-        // re-render chart
-        this.charts && this.charts.map(entity => entity.count++);
-			},
-		},
-		watch: {
-			submit_cnt: function () {
-				if (this.symbol && this.symbol.trim() !== '') {
-					this.loadChartData();
-				}
-			},
-		}
-	}
+              for (let j = 0; j < chart.features.length; j++) {
+                apiCallCnt++;
+                this.axios.get(`https://mka-api.alpha.lab.ai/factsheet/${this.symbol}/${chart.features[j]}`)
+                  .then(response => {
+                    const data = response.data;
+                    data.sort(function (a, b) {
+                      return (new Date(a.FinanceDate) > new Date(b.FinanceDate)) ? 1 : -1;
+                    }) && data.map(item => {
+                      if (j === 0) {
+                        this.contents[i].dates.push(item.Fiscal + '-' + item.Quarter);
+                      }
+                      this.contents[i]['closes' + (j + 1)].push(item[chart.features[j]]);
+                    });
+                  })
+                  .catch(error => {
+                    console.log(error);
+                  })
+                  .finally(() => {
+                    apiResponseCnt++;
+                  });
+              }
+            }
+          }
+        });
+
+        const interval = setInterval(() => {
+          if (apiCallCnt === apiResponseCnt) {
+            // re-render chart
+            this.charts && this.charts.map(entity => entity.count++);
+            clearInterval(interval);
+          }
+        })
+      },
+    },
+    watch: {
+      submit_cnt: function () {
+        if (this.symbol && this.symbol.trim() !== '') {
+          this.loadChartData();
+        }
+      },
+    }
+  }
 </script>
 
 <style scoped lang="scss">
