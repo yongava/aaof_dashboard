@@ -1,5 +1,8 @@
 <template>
   <div class="overview-wrapper">
+    <loader
+      v-if="isLoading"
+    />
     <div>
       <div class="grid-pattern">
         <div
@@ -47,6 +50,7 @@
   import LineChart from "./LineChart";
   import TwoLineChart from "./TwoLineChart";
   import GroupBarChart from "./GroupBarChart";
+  import Loader from "./Loader";
 
   export default {
     name: "Commission",
@@ -59,6 +63,7 @@
       GroupBarChart,
       LineChart,
       TwoLineChart,
+      Loader,
     },
     props: ['charts', 'sorted', 'filtered', 'symbol', 'submit_cnt'],
     data: () => ({
@@ -67,10 +72,13 @@
           dates: [],
           closes: [],
         },
-      ]
+      ],
+      isLoading: false,
     }),
     methods: {
       async loadChartData() {
+        this.isLoading = true;
+
         let apiResponseCnt = 0, apiCallCnt = 0;
         this.charts && this.charts.map((chart, i) => {
           this.contents[i] = null;
@@ -160,6 +168,8 @@
           if (apiCallCnt === apiResponseCnt) {
             // re-render chart
             this.charts && this.charts.map(entity => entity.count++);
+            // hide loading
+            this.isLoading = false;
             clearInterval(interval);
           }
         })
