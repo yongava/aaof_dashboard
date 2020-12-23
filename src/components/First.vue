@@ -2,9 +2,9 @@
     <div class="first-wrapper">
         <div class="upper">
             <div class="column">
-                <h2>{{symbol_name}}</h2>
-                <p>{{symbol_name}} Distibuton (Thailand) PCL</p>
-                <h4>BKK: {{symbol_name}}</h4>
+                <h2>{{ticker}}</h2>
+                <p>{{name}}</p>
+                <h4>BKK: <a style="text-decoration: none" target="_blank" :href="webUrl">{{webUrl}}</a></h4>
             </div>
             <div class="column right">
                 <h2>{{close}}</h2>
@@ -15,7 +15,7 @@
             </div>
         </div>
         <div class="bottom">
-            <h2>Electronic Technology</h2>
+            <h2>{{gGroup}}</h2>
             <p>
                 {{businessText}}
             </p>
@@ -29,16 +29,31 @@
         props: ['symbol_name', 'submit_cnt'],
         data() {
             return {
+                apiUrl: 'https://notredame.alpha.lab.ai/api/profile',
                 businessText: '',
-                close: null,
-                change: null,
-                pct_change: null,
+                close: '',
+                change: '',
+                pct_change: '',
+                authorizationToken: "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE4OTM0NTYwMDAsInVzZXJuYW1lIjoieW9ydCJ9.GGYlZFvQfYJTT3VU6owQXImwD3tsO9HICMG83sgSPYU",
+                ticker: '',
+                webUrl: '',
+                name: '',
+                gGroup: '',
             }
         },
         methods: {
             async loadBusinessData() {
                 this.businessText = '';
                 try {
+                    const additionalData = await this.axios.get(`${this.apiUrl}?symbol=${this.symbol_name}.bk&exchange=bk`, {
+                        headers: {Authorization: this.authorizationToken}});
+                        if (additionalData && additionalData.data && additionalData.data.data) {
+                            this.ticker = additionalData.data.data['ticker'] || '';
+                            this.webUrl = additionalData.data.data['weburl'] || '';
+                            this.name = additionalData.data.data['name'] || '';
+                            this.gGroup = additionalData.data.data['ggroup'] || '';
+                        }
+
                     const businessInfo = await this.axios.get(`https://mka-api.alpha.lab.ai/businessinfo/${this.symbol_name}`);
                     this.businessText = businessInfo.data && businessInfo.data[0] && businessInfo.data[0].BusinessTypeTH;
 
